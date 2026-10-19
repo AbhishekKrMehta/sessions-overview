@@ -1,0 +1,116 @@
+<div class="sessions-container">
+  <header class="sessions-header">
+    <h1 class="sessions-title">Sessions</h1>
+    <p class="sessions-subtitle">
+      Charging session overview — support can locate any session here.
+    </p>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="error-banner" role="alert">
+      <div class="error-content">
+        <span class="error-icon" aria-hidden="true">⚠️</span>
+        <span class="error-text">{{ errorMessage() }}</span>
+      </div>
+      <button type="button" class="retry-button" (click)="retry()">
+        Retry
+      </button>
+    </div>
+  }
+
+  <div class="grid-card">
+    <kendo-grid
+      [data]="gridData()"
+      [pageSize]="pageSize"
+      [skip]="skip"
+      [pageable]="{
+        buttonCount: 10,
+        info: true,
+        type: 'numeric',
+        pageSizes: [10, 20, 50]
+      }"
+      [sortable]="{
+        allowUnsort: true,
+        mode: 'single'
+      }"
+      [sort]="sort"
+      [loading]="loading()"
+      (pageChange)="onPageChange($event)"
+      (sortChange)="onSortChange($event)"
+    >
+      <kendo-grid-column field="chargerName" title="Charger" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.chargerName }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="chargerLocation" title="Location" [width]="140">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.chargerLocation }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="status" title="Status" [width]="130">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span
+            class="status-pill"
+            [ngClass]="'status-' + (dataItem.status | lowercase)"
+          >
+            <span class="status-dot"></span>
+            {{ dataItem.status }}
+          </span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="startedAt" title="Started" [width]="170">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ formatStartedDate(dataItem.startedAt) }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="durationMinutes" title="Duration" [width]="120">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ formatDuration(dataItem.durationMinutes) }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="energyKwh" title="Energy" [width]="120">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ formatEnergy(dataItem.energyKwh) }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="costEur" title="Cost" [width]="110">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ formatCost(dataItem.costEur) }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="user" title="User" [width]="180">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="user-cell">
+            <span class="user-avatar" aria-hidden="true">
+              {{ getUserInitial(dataItem.user) }}
+            </span>
+            <span class="user-name">{{ dataItem.user }}</span>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="id" title="Session ID" [width]="150">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="session-id" [title]="dataItem.id">
+            {{ truncateSessionId(dataItem.id) }}
+          </span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="no-records">
+          No sessions found.
+        </div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</div>
+
