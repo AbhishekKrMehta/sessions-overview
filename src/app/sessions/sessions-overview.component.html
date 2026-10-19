@@ -1,9 +1,20 @@
 <div class="sessions-container">
   <header class="sessions-header">
-    <h1 class="sessions-title">Sessions</h1>
-    <p class="sessions-subtitle">
-      Charging session overview — support can locate any session here.
-    </p>
+    <div class="header-titles">
+      <h1 class="sessions-title">Sessions</h1>
+      <p class="sessions-subtitle">
+        Charging session overview — support can locate any session here.
+      </p>
+    </div>
+    @if (isFiltered()) {
+      <button
+        type="button"
+        class="clear-filters-btn"
+        (click)="clearFilters()"
+      >
+        ✕ Reset all filters
+      </button>
+    }
   </header>
 
   @if (errorMessage()) {
@@ -19,98 +30,216 @@
   }
 
   <div class="grid-card">
-    <kendo-grid
-      [data]="gridData()"
-      [pageSize]="pageSize"
-      [skip]="skip"
-      [pageable]="{
-        buttonCount: 10,
-        info: true,
-        type: 'numeric',
-        pageSizes: [10, 20, 50]
-      }"
-      [sortable]="{
-        allowUnsort: true,
-        mode: 'single'
-      }"
-      [sort]="sort"
-      [loading]="loading()"
-      (pageChange)="onPageChange($event)"
-      (sortChange)="onSortChange($event)"
-    >
-      <kendo-grid-column field="chargerName" title="Charger" [width]="130">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          {{ dataItem.chargerName }}
-        </ng-template>
-      </kendo-grid-column>
+    <form [formGroup]="filterForm">
+      <kendo-grid
+        [data]="gridData()"
+        [pageSize]="pageSize"
+        [skip]="skip"
+        [pageable]="{
+          buttonCount: 10,
+          info: true,
+          type: 'numeric',
+          pageSizes: [10, 20, 50]
+        }"
+        [sortable]="{
+          allowUnsort: true,
+          mode: 'single'
+        }"
+        [sort]="sort"
+        [filterable]="true"
+        [loading]="loading()"
+        (pageChange)="onPageChange($event)"
+        (sortChange)="onSortChange($event)"
+      >
+        <!-- 1. Charger Column -->
+        <kendo-grid-column field="chargerName" title="Charger" [width]="160">
+          <ng-template kendoGridFilterCellTemplate>
+            <kendo-dropdownlist
+              formControlName="chargerName"
+              [data]="chargerDropdownData"
+              [defaultItem]="'All chargers'"
+              [filterable]="true"
+              (filterChange)="onChargerFilter($event)"
+            >
+            </kendo-dropdownlist>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.chargerName }}
+          </ng-template>
+        </kendo-grid-column>
 
-      <kendo-grid-column field="chargerLocation" title="Location" [width]="140">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          {{ dataItem.chargerLocation }}
-        </ng-template>
-      </kendo-grid-column>
+        <!-- 2. Location Column -->
+        <kendo-grid-column field="chargerLocation" title="Location" [width]="150">
+          <ng-template kendoGridFilterCellTemplate>
+            <kendo-textbox
+              formControlName="chargerLocation"
+              placeholder=""
+            >
+            </kendo-textbox>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.chargerLocation }}
+          </ng-template>
+        </kendo-grid-column>
 
-      <kendo-grid-column field="status" title="Status" [width]="130">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          <span
-            class="status-pill"
-            [ngClass]="'status-' + (dataItem.status | lowercase)"
-          >
-            <span class="status-dot"></span>
-            {{ dataItem.status }}
-          </span>
-        </ng-template>
-      </kendo-grid-column>
-
-      <kendo-grid-column field="startedAt" title="Started" [width]="170">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          {{ formatStartedDate(dataItem.startedAt) }}
-        </ng-template>
-      </kendo-grid-column>
-
-      <kendo-grid-column field="durationMinutes" title="Duration" [width]="120">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          {{ formatDuration(dataItem.durationMinutes) }}
-        </ng-template>
-      </kendo-grid-column>
-
-      <kendo-grid-column field="energyKwh" title="Energy" [width]="120">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          {{ formatEnergy(dataItem.energyKwh) }}
-        </ng-template>
-      </kendo-grid-column>
-
-      <kendo-grid-column field="costEur" title="Cost" [width]="110">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          {{ formatCost(dataItem.costEur) }}
-        </ng-template>
-      </kendo-grid-column>
-
-      <kendo-grid-column field="user" title="User" [width]="180">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          <div class="user-cell">
-            <span class="user-avatar" aria-hidden="true">
-              {{ getUserInitial(dataItem.user) }}
+        <!-- 3. Status Column -->
+        <kendo-grid-column field="status" title="Status" [width]="150">
+          <ng-template kendoGridFilterCellTemplate>
+            <kendo-dropdownlist
+              formControlName="status"
+              [data]="statusOptions"
+              [defaultItem]="'All statuses'"
+            >
+            </kendo-dropdownlist>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span
+              class="status-pill"
+              [ngClass]="'status-' + (dataItem.status | lowercase)"
+            >
+              <span class="status-dot"></span>
+              {{ dataItem.status }}
             </span>
-            <span class="user-name">{{ dataItem.user }}</span>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- 4. Started Column (Date Range) -->
+        <kendo-grid-column field="startedAt" title="Started" [width]="290">
+          <ng-template kendoGridFilterCellTemplate>
+            <div class="range-filter">
+              <kendo-datepicker
+                formControlName="startedFrom"
+                placeholder="From"
+                format="dd MMM yyyy"
+              >
+              </kendo-datepicker>
+              <span class="range-arrow" aria-hidden="true">→</span>
+              <kendo-datepicker
+                formControlName="startedTo"
+                placeholder="To"
+                format="dd MMM yyyy"
+              >
+              </kendo-datepicker>
+            </div>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ formatStartedDate(dataItem.startedAt) }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- 5. Duration Column (Min -> Max) -->
+        <kendo-grid-column field="durationMinutes" title="Duration" [width]="180">
+          <ng-template kendoGridFilterCellTemplate>
+            <div class="range-filter">
+              <kendo-numerictextbox
+                formControlName="minDuration"
+                placeholder="Min"
+                [spinners]="false"
+                [min]="0"
+                format="n0"
+              >
+              </kendo-numerictextbox>
+              <span class="range-arrow" aria-hidden="true">→</span>
+              <kendo-numerictextbox
+                formControlName="maxDuration"
+                placeholder="Max"
+                [spinners]="false"
+                [min]="0"
+                format="n0"
+              >
+              </kendo-numerictextbox>
+            </div>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ formatDuration(dataItem.durationMinutes) }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- 6. Energy Column (>= kWh) -->
+        <kendo-grid-column field="energyKwh" title="Energy" [width]="120">
+          <ng-template kendoGridFilterCellTemplate>
+            <kendo-numerictextbox
+              formControlName="minEnergy"
+              placeholder="≥ kWh"
+              [spinners]="false"
+              [min]="0"
+              format="n1"
+            >
+            </kendo-numerictextbox>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ formatEnergy(dataItem.energyKwh) }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- 7. Cost Column (>= €) -->
+        <kendo-grid-column field="costEur" title="Cost" [width]="120">
+          <ng-template kendoGridFilterCellTemplate>
+            <kendo-numerictextbox
+              formControlName="minCost"
+              placeholder="≥ €"
+              [spinners]="false"
+              [min]="0"
+              format="n2"
+            >
+            </kendo-numerictextbox>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ formatCost(dataItem.costEur) }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- 8. User Column -->
+        <kendo-grid-column field="user" title="User" [width]="180">
+          <ng-template kendoGridFilterCellTemplate>
+            <kendo-textbox
+              formControlName="user"
+              placeholder=""
+            >
+            </kendo-textbox>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="user-cell">
+              <span class="user-avatar" aria-hidden="true">
+                {{ getUserInitial(dataItem.user) }}
+              </span>
+              <span class="user-name">{{ dataItem.user }}</span>
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- 9. Session ID Column -->
+        <kendo-grid-column field="id" title="Session ID" [width]="150">
+          <ng-template kendoGridFilterCellTemplate>
+            <kendo-textbox
+              formControlName="id"
+              placeholder=""
+            >
+            </kendo-textbox>
+          </ng-template>
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span
+              class="session-id clickable"
+              (click)="copySessionId(dataItem.id)"
+              [title]="'Click to copy full ID: ' + dataItem.id"
+            >
+              {{ truncateSessionId(dataItem.id) }}
+              <span
+                class="copy-indicator"
+                [class.copied]="copiedSessionId() === dataItem.id"
+              >
+                {{ copiedSessionId() === dataItem.id ? '✓' : '⧉' }}
+              </span>
+            </span>
+          </ng-template>
+        </kendo-grid-column>
+
+        <ng-template kendoGridNoRecordsTemplate>
+          <div class="no-records">
+            No sessions found matching your filters.
           </div>
         </ng-template>
-      </kendo-grid-column>
-
-      <kendo-grid-column field="id" title="Session ID" [width]="150">
-        <ng-template kendoGridCellTemplate let-dataItem>
-          <span class="session-id" [title]="dataItem.id">
-            {{ truncateSessionId(dataItem.id) }}
-          </span>
-        </ng-template>
-      </kendo-grid-column>
-
-      <ng-template kendoGridNoRecordsTemplate>
-        <div class="no-records">
-          No sessions found.
-        </div>
-      </ng-template>
-    </kendo-grid>
+      </kendo-grid>
+    </form>
   </div>
 </div>
-
