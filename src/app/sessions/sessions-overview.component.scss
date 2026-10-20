@@ -88,6 +88,48 @@
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   overflow: hidden;
+  position: relative;
+}
+
+.table-progress-bar {
+  height: 3px;
+  width: 100%;
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+  transition: opacity 0.2s ease;
+  opacity: 0;
+
+  &.active {
+    opacity: 1;
+    background-color: #e2e8f0;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 40%;
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      border-radius: 2px;
+      animation: indeterminate-progress 1.2s infinite ease-in-out;
+    }
+  }
+}
+
+@keyframes indeterminate-progress {
+  0% {
+    left: -40%;
+  }
+  50% {
+    left: 40%;
+    width: 60%;
+  }
+  100% {
+    left: 100%;
+    width: 40%;
+  }
 }
 
 // Range filter container for Started (From -> To) and Duration (Min -> Max)

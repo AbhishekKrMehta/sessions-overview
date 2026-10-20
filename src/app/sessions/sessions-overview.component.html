@@ -30,6 +30,7 @@
   }
 
   <div class="grid-card">
+    <div class="table-progress-bar" [class.active]="loading()"></div>
     <form [formGroup]="filterForm">
       <kendo-grid
         [data]="gridData()"
@@ -47,7 +48,6 @@
         }"
         [sort]="sort"
         [filterable]="true"
-        [loading]="loading()"
         (pageChange)="onPageChange($event)"
         (sortChange)="onSortChange($event)"
       >

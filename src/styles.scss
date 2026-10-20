@@ -1,5 +1,14 @@
 @use "@progress/kendo-theme-default/scss/all.scss" as *;
 
+:root,
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
+    sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 // Custom overrides for Kendo Grid to match the design screenshot
 .k-grid {
   border: none !important;
