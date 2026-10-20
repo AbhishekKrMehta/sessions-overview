@@ -1,7 +1,10 @@
 @use "@progress/kendo-theme-default/scss/all.scss" as *;
 
-:root,
+html,
 body {
+  margin: 0;
+  padding: 0;
+  background-color: #f8fafc;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial,
     sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
