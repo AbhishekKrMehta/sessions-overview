@@ -2,7 +2,6 @@ import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
   DestroyRef,
   inject,
   OnInit,
@@ -58,6 +57,8 @@ import {
   getUserInitial,
   truncateSessionId,
 } from "./session-formatters";
+import { SessionsErrorComponent } from "./components/sessions-error/sessions-error.component";
+import { SessionsHeaderComponent } from "./components/sessions-header/sessions-header.component";
 
 @Component({
   selector: "app-sessions-overview",
@@ -71,6 +72,8 @@ import {
     InputsModule,
     ButtonModule,
     IconsModule,
+    SessionsHeaderComponent,
+    SessionsErrorComponent,
   ],
   templateUrl: "./sessions-overview.component.html",
   styleUrls: ["./sessions-overview.component.scss"],
@@ -84,19 +87,14 @@ export class SessionsOverviewComponent implements OnInit {
   skip = 0;
   pageSize = 10;
   sort: SortDescriptor[] = [];
-
-  // Active filters mapped from the form
   protected activeFilters: SessionFilter[] = [];
 
-  // Dropdown options
-  allChargers: string[] = [];
-  chargerDropdownData: string[] = [];
-  readonly statusOptions: Session["status"][] = [
-    "Active",
-    "Completed",
-    "Failed",
-    "Cancelled",
-  ];
+  // View state as clean Signals for OnPush change detection
+  readonly gridData = signal<GridDataResult>({ data: [], total: 0 });
+  readonly loading = signal<boolean>(false);
+  readonly errorMessage = signal<string | null>(null);
+  readonly isFiltered = signal<boolean>(false);
+  readonly copiedSessionId = signal<string | null>(null);
 
   // Filter Form Controls
   readonly filterForm = new FormGroup({
@@ -113,12 +111,15 @@ export class SessionsOverviewComponent implements OnInit {
     id: new FormControl<string>(""),
   });
 
-  // Signals for view binding
-  readonly gridData = signal<GridDataResult>({ data: [], total: 0 });
-  readonly loading = signal<boolean>(false);
-  readonly errorMessage = signal<string | null>(null);
-  readonly isFiltered = signal<boolean>(false);
-  readonly copiedSessionId = signal<string | null>(null);
+  // Dropdown options
+  allChargers: string[] = [];
+  chargerDropdownData: string[] = [];
+  readonly statusOptions: Session["status"][] = [
+    "Active",
+    "Completed",
+    "Failed",
+    "Cancelled",
+  ];
 
   // Kendo SVG Icons
   readonly resetIcon: SVGIcon = arrowRotateCcwIcon;
@@ -134,7 +135,7 @@ export class SessionsOverviewComponent implements OnInit {
   readonly getUserInitial = getUserInitial;
   readonly truncateSessionId = truncateSessionId;
 
-  // RxJS pipeline trigger for query re-execution
+  // RxJS pipeline trigger for server queries
   protected readonly queryTrigger$ = new BehaviorSubject<void>(undefined);
 
   ngOnInit(): void {
@@ -152,41 +153,40 @@ export class SessionsOverviewComponent implements OnInit {
           this.allChargers = chargers;
           this.chargerDropdownData = chargers;
         },
-        error: () => {
-          // If charger list fails, user can still use text filters
-        },
+        error: () => {},
       });
   }
 
   onChargerFilter(searchTerm: string): void {
     const term = (searchTerm || "").toLowerCase().trim();
     this.chargerDropdownData = this.allChargers.filter((c) =>
-      c.toLowerCase().includes(term),
+      c.toLowerCase().includes(term)
     );
   }
 
+  // 1. RxJS handles debouncing user typing on filter inputs
   private setupFilterListener(): void {
     this.filterForm.valueChanges
       .pipe(
         debounceTime(300),
         distinctUntilChanged(
-          (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr),
+          (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
         ),
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((formValue) => {
-        // Reset pagination to first page whenever filters change
-        this.skip = 0;
+        this.skip = 0; // Reset pagination to page 1 on filter changes
         this.activeFilters = mapFormValueToSessionFilters(
-          formValue as SessionFilterFormValue,
+          formValue as SessionFilterFormValue
         );
         this.isFiltered.set(
-          hasActiveFilters(formValue as SessionFilterFormValue),
+          hasActiveFilters(formValue as SessionFilterFormValue)
         );
         this.queryTrigger$.next();
       });
   }
 
+  // 2. RxJS handles request cancellation (switchMap) and error isolation
   private setupQueryPipeline(): void {
     this.queryTrigger$
       .pipe(
@@ -204,13 +204,13 @@ export class SessionsOverviewComponent implements OnInit {
           return this.fakeSessionService.getSessions(query).pipe(
             catchError((err: Error) => {
               this.errorMessage.set(
-                err?.message || "Failed to load sessions. Please try again.",
+                err?.message || "Failed to load sessions. Please try again."
               );
               return of(null);
-            }),
+            })
           );
         }),
-        takeUntilDestroyed(this.destroyRef),
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((page) => {
         this.loading.set(false);

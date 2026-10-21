@@ -1,32 +1,14 @@
 <div class="sessions-container">
-  <header class="sessions-header">
-    <div class="header-titles">
-      <h1 class="sessions-title">Sessions</h1>
-      <p class="sessions-subtitle">
-        Charging session overview — support can locate any session here.
-      </p>
-    </div>
-    @if (isFiltered()) {
-      <button type="button" class="clear-filters-btn" (click)="clearFilters()">
-        <kendo-svg-icon [icon]="resetIcon" size="small"></kendo-svg-icon>
-        Reset all filters
-      </button>
-    }
-  </header>
+  <app-sessions-header
+    [isFiltered]="isFiltered()"
+    (reset)="clearFilters()"
+  ></app-sessions-header>
 
   @if (errorMessage()) {
-    <div class="error-banner" role="alert">
-      <div class="error-content">
-        <kendo-svg-icon
-          [icon]="warningIcon"
-          class="error-svg-icon"
-        ></kendo-svg-icon>
-        <span class="error-text">{{ errorMessage() }}</span>
-      </div>
-      <button type="button" class="retry-button" (click)="retry()">
-        Retry
-      </button>
-    </div>
+    <app-sessions-error
+      [message]="errorMessage()!"
+      (retry)="retry()"
+    ></app-sessions-error>
   }
 
   <div class="grid-card">
@@ -249,3 +231,4 @@
     </form>
   </div>
 </div>
+

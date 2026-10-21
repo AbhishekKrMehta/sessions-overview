@@ -1,0 +1,14 @@
+<header class="sessions-header">
+  <div class="header-titles">
+    <h1 class="sessions-title">Sessions</h1>
+    <p class="sessions-subtitle">
+      Charging session overview — support can locate any session here.
+    </p>
+  </div>
+  @if (isFiltered()) {
+    <button type="button" class="clear-filters-btn" (click)="reset.emit()">
+      <kendo-svg-icon [icon]="resetIcon" size="small"></kendo-svg-icon>
+      Reset all filters
+    </button>
+  }
+</header>
