@@ -6,9 +6,13 @@
     </p>
   </div>
   @if (isFiltered()) {
-    <button type="button" class="clear-filters-btn" (click)="reset.emit()">
+    <button
+      type="button"
+      class="clear-filters-btn"
+      (click)="clearFilters.emit()"
+    >
       <kendo-svg-icon [icon]="resetIcon" size="small"></kendo-svg-icon>
-      Reset all filters
+      Clear all filters
     </button>
   }
 </header>

@@ -34,7 +34,11 @@
       left: 0;
       bottom: 0;
       width: 40%;
-      background: linear-gradient(90deg, var(--primary-blue), var(--primary-blue-dark));
+      background: linear-gradient(
+        90deg,
+        var(--primary-blue),
+        var(--primary-blue-dark)
+      );
       border-radius: 2px;
       animation: indeterminate-progress 1.2s infinite ease-in-out;
     }
@@ -80,10 +84,22 @@
     display: inline-block;
   }
 
-  &.status-active { background-color: var(--status-active-bg); color: var(--status-active-text); }
-  &.status-completed { background-color: var(--status-completed-bg); color: var(--status-completed-text); }
-  &.status-failed { background-color: var(--status-failed-bg); color: var(--status-failed-text); }
-  &.status-cancelled { background-color: var(--status-cancelled-bg); color: var(--status-cancelled-text); }
+  &.status-active {
+    background-color: var(--status-active-bg);
+    color: var(--status-active-text);
+  }
+  &.status-completed {
+    background-color: var(--status-completed-bg);
+    color: var(--status-completed-text);
+  }
+  &.status-failed {
+    background-color: var(--status-failed-bg);
+    color: var(--status-failed-text);
+  }
+  &.status-cancelled {
+    background-color: var(--status-cancelled-bg);
+    color: var(--status-cancelled-text);
+  }
 }
 
 .user-cell {

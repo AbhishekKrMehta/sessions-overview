@@ -1,6 +1,9 @@
 <div class="error-banner" role="alert">
   <div class="error-content">
-    <kendo-svg-icon [icon]="warningIcon" class="error-svg-icon"></kendo-svg-icon>
+    <kendo-svg-icon
+      [icon]="warningIcon"
+      class="error-svg-icon"
+    ></kendo-svg-icon>
     <span class="error-text">{{ message() }}</span>
   </div>
   <button type="button" class="retry-button" (click)="retry.emit()">

@@ -1,7 +1,7 @@
 <div class="sessions-container">
   <app-sessions-header
     [isFiltered]="isFiltered()"
-    (reset)="clearFilters()"
+    (clearFilters)="clearFilters()"
   ></app-sessions-header>
 
   @if (errorMessage()) {
@@ -200,24 +200,25 @@
           <ng-template kendoGridCellTemplate let-dataItem>
             <span
               class="session-id clickable"
+              role="button"
+              tabindex="0"
               (click)="copySessionId(dataItem.id)"
+              (keydown.enter)="copySessionId(dataItem.id)"
+              (keydown.space)="
+                copySessionId(dataItem.id); $event.preventDefault()
+              "
               [title]="'Click to copy full ID: ' + dataItem.id"
             >
               {{ truncateSessionId(dataItem.id) }}
+
               <span
                 class="copy-indicator"
                 [class.copied]="copiedSessionId() === dataItem.id"
               >
                 @if (copiedSessionId() === dataItem.id) {
-                  <kendo-svg-icon
-                    [icon]="checkIcon"
-                    size="small"
-                  ></kendo-svg-icon>
+                  <kendo-svg-icon [icon]="checkIcon" size="small" />
                 } @else {
-                  <kendo-svg-icon
-                    [icon]="copyIcon"
-                    size="small"
-                  ></kendo-svg-icon>
+                  <kendo-svg-icon [icon]="copyIcon" size="small" />
                 }
               </span>
             </span>
@@ -231,4 +232,3 @@
     </form>
   </div>
 </div>
-

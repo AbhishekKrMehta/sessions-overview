@@ -1,6 +1,4 @@
-/**
- * Pure formatting helper functions for charging sessions.
- */
+// Pure formatting helper functions for charging sessions.
 
 const MONTH_NAMES = [
   "Jan",
@@ -17,9 +15,8 @@ const MONTH_NAMES = [
   "Dec",
 ];
 
-/**
- * Formats duration in minutes into a human-readable string like '6h 49m' or '15m'.
- */
+// Formats duration in minutes into a human-readable string like '6h 49m' or '15m'.
+
 export function formatDuration(minutes: number | null | undefined): string {
   if (minutes == null || isNaN(minutes) || minutes < 0) {
     return "—";
@@ -37,9 +34,8 @@ export function formatDuration(minutes: number | null | undefined): string {
   return `${hours}h ${remainingMinutes}m`;
 }
 
-/**
- * Formats energy in kilowatt-hours, e.g. '80.5 kWh'.
- */
+// Formats energy in kilowatt-hours, e.g. '80.5 kWh'.
+
 export function formatEnergy(kwh: number | null | undefined): string {
   if (kwh == null || isNaN(kwh)) {
     return "—";
@@ -47,9 +43,8 @@ export function formatEnergy(kwh: number | null | undefined): string {
   return `${kwh.toFixed(1)} kWh`;
 }
 
-/**
- * Formats cost in Euros, e.g. '€ 14.07'.
- */
+// Formats cost in Euros, e.g. '€ 14.07'.
+
 export function formatCost(cost: number | null | undefined): string {
   if (cost == null || isNaN(cost)) {
     return "—";
@@ -57,9 +52,8 @@ export function formatCost(cost: number | null | undefined): string {
   return `€ ${cost.toFixed(2)}`;
 }
 
-/**
- * Formats session start timestamp as '01 Feb 2026 20:23'.
- */
+// Formats session start timestamp as '01 Feb 2026 20:23'.
+
 export function formatStartedDate(
   date: Date | string | null | undefined,
 ): string {
@@ -76,18 +70,16 @@ export function formatStartedDate(
   return `${day} ${month} ${year} ${hours}:${minutes}`;
 }
 
-/**
- * Extracts single initial for the user avatar (e.g. 'Anna Kuipers' -> 'A').
- */
+// Extracts single initial for the user avatar (e.g. 'Anna Kuipers' -> 'A').
+
 export function getUserInitial(name: string | null | undefined): string {
   if (!name) return "?";
   const trimmed = name.trim();
   return trimmed.length > 0 ? trimmed.charAt(0).toUpperCase() : "?";
 }
 
-/**
- * Truncates UUID for table presentation, e.g. '849d73eb...'.
- */
+// Truncates UUID for table presentation, e.g. '849d73eb...'.
+
 export function truncateSessionId(
   id: string | null | undefined,
   length = 8,

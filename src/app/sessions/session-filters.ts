@@ -14,27 +14,24 @@ export interface SessionFilterFormValue {
   id?: string | null;
 }
 
-/**
- * Returns a new Date object representing the inclusive start of day (00:00:00.000).
- */
+//  Returns a new Date object representing the inclusive start of day (00:00:00.000).
+
 export function startOfDay(date: Date): Date {
   const d = new Date(date);
   d.setHours(0, 0, 0, 0);
   return d;
 }
 
-/**
- * Returns a new Date object representing the inclusive end of day (23:59:59.999).
- */
+// Returns a new Date object representing the inclusive end of day (23:59:59.999).
+
 export function endOfDay(date: Date): Date {
   const d = new Date(date);
   d.setHours(23, 59, 59, 999);
   return d;
 }
 
-/**
- * Pure function mapping UI filter form controls to backend SessionFilter[] specifications.
- */
+//  Pure function mapping UI filter form controls to backend SessionFilter[] specifications.
+
 export function mapFormValueToSessionFilters(
   form: SessionFilterFormValue,
 ): SessionFilter[] {
@@ -142,9 +139,8 @@ export function mapFormValueToSessionFilters(
   return filters;
 }
 
-/**
- * Checks whether any filter control is currently active.
- */
+// Checks whether any filter control is currently active.
+
 export function hasActiveFilters(form: SessionFilterFormValue): boolean {
   return mapFormValueToSessionFilters(form).length > 0;
 }

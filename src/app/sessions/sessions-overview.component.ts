@@ -153,14 +153,16 @@ export class SessionsOverviewComponent implements OnInit {
           this.allChargers = chargers;
           this.chargerDropdownData = chargers;
         },
-        error: () => {},
+        error: (err) => {
+          console.error("Failed to load chargers:", err);
+        },
       });
   }
 
   onChargerFilter(searchTerm: string): void {
     const term = (searchTerm || "").toLowerCase().trim();
-    this.chargerDropdownData = this.allChargers.filter((c) =>
-      c.toLowerCase().includes(term)
+    this.chargerDropdownData = this.allChargers.filter((charger) =>
+      charger.toLowerCase().includes(term),
     );
   }
 
@@ -170,17 +172,17 @@ export class SessionsOverviewComponent implements OnInit {
       .pipe(
         debounceTime(300),
         distinctUntilChanged(
-          (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr)
+          (prev, curr) => JSON.stringify(prev) === JSON.stringify(curr),
         ),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((formValue) => {
         this.skip = 0; // Reset pagination to page 1 on filter changes
         this.activeFilters = mapFormValueToSessionFilters(
-          formValue as SessionFilterFormValue
+          formValue as SessionFilterFormValue,
         );
         this.isFiltered.set(
-          hasActiveFilters(formValue as SessionFilterFormValue)
+          hasActiveFilters(formValue as SessionFilterFormValue),
         );
         this.queryTrigger$.next();
       });
@@ -204,13 +206,13 @@ export class SessionsOverviewComponent implements OnInit {
           return this.fakeSessionService.getSessions(query).pipe(
             catchError((err: Error) => {
               this.errorMessage.set(
-                err?.message || "Failed to load sessions. Please try again."
+                err?.message || "Failed to load sessions. Please try again.",
               );
               return of(null);
-            })
+            }),
           );
         }),
-        takeUntilDestroyed(this.destroyRef)
+        takeUntilDestroyed(this.destroyRef),
       )
       .subscribe((page) => {
         this.loading.set(false);
