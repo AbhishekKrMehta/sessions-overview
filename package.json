@@ -5,7 +5,8 @@
   "scripts": {
     "start": "ng serve",
     "build": "ng build",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "format": "prettier . --write"
   },
   "dependencies": {
     "@angular/animations": "20.3.18",
@@ -55,6 +56,7 @@
     "@angular/compiler-cli": "20.3.18",
     "angular-eslint": "20.7.0",
     "eslint": "9.39.1",
+    "prettier": "3.9.10",
     "typescript": "5.9.3",
     "typescript-eslint": "8.72.0"
   }
