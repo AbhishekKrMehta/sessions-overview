@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -7,33 +7,41 @@ import {
   inject,
   OnInit,
   signal,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ButtonModule } from '@progress/kendo-angular-buttons';
-import { DateInputsModule } from '@progress/kendo-angular-dateinputs';
-import { DropDownListModule } from '@progress/kendo-angular-dropdowns';
+} from "@angular/core";
+import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
+import { ButtonModule } from "@progress/kendo-angular-buttons";
+import { DateInputsModule } from "@progress/kendo-angular-dateinputs";
+import { DropDownListModule } from "@progress/kendo-angular-dropdowns";
 import {
   GridDataResult,
   GridModule,
   PageChangeEvent,
-} from '@progress/kendo-angular-grid';
-import { InputsModule } from '@progress/kendo-angular-inputs';
-import { SortDescriptor } from '@progress/kendo-data-query';
-import { BehaviorSubject, catchError, debounceTime, distinctUntilChanged, of, switchMap, tap } from 'rxjs';
-import { FakeSessionService } from '../fake/fake-session.service';
+} from "@progress/kendo-angular-grid";
+import { InputsModule } from "@progress/kendo-angular-inputs";
+import { SortDescriptor } from "@progress/kendo-data-query";
+import {
+  BehaviorSubject,
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  of,
+  switchMap,
+  tap,
+} from "rxjs";
+import { FakeSessionService } from "../fake/fake-session.service";
 import {
   Session,
   SessionFilter,
   SessionQuery,
   SessionSort,
   SessionSortDirection,
-} from '../fake/session.model';
+} from "../fake/session.model";
 import {
   hasActiveFilters,
   mapFormValueToSessionFilters,
   SessionFilterFormValue,
-} from './session-filters';
+} from "./session-filters";
 import {
   formatCost,
   formatDuration,
@@ -41,10 +49,10 @@ import {
   formatStartedDate,
   getUserInitial,
   truncateSessionId,
-} from './session-formatters';
+} from "./session-formatters";
 
 @Component({
-  selector: 'app-sessions-overview',
+  selector: "app-sessions-overview",
   standalone: true,
   imports: [
     CommonModule,
@@ -55,8 +63,8 @@ import {
     InputsModule,
     ButtonModule,
   ],
-  templateUrl: './sessions-overview.component.html',
-  styleUrls: ['./sessions-overview.component.scss'],
+  templateUrl: "./sessions-overview.component.html",
+  styleUrls: ["./sessions-overview.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SessionsOverviewComponent implements OnInit {
@@ -74,26 +82,26 @@ export class SessionsOverviewComponent implements OnInit {
   // Dropdown options
   allChargers: string[] = [];
   chargerDropdownData: string[] = [];
-  readonly statusOptions: Session['status'][] = [
-    'Active',
-    'Completed',
-    'Failed',
-    'Cancelled',
+  readonly statusOptions: Session["status"][] = [
+    "Active",
+    "Completed",
+    "Failed",
+    "Cancelled",
   ];
 
   // Filter Form Controls
   readonly filterForm = new FormGroup({
     chargerName: new FormControl<string | null>(null),
-    chargerLocation: new FormControl<string>(''),
-    status: new FormControl<Session['status'] | null>(null),
+    chargerLocation: new FormControl<string>(""),
+    status: new FormControl<Session["status"] | null>(null),
     startedFrom: new FormControl<Date | null>(null),
     startedTo: new FormControl<Date | null>(null),
     minDuration: new FormControl<number | null>(null),
     maxDuration: new FormControl<number | null>(null),
     minEnergy: new FormControl<number | null>(null),
     minCost: new FormControl<number | null>(null),
-    user: new FormControl<string>(''),
-    id: new FormControl<string>(''),
+    user: new FormControl<string>(""),
+    id: new FormControl<string>(""),
   });
 
   // Signals for view binding
@@ -136,7 +144,7 @@ export class SessionsOverviewComponent implements OnInit {
   }
 
   onChargerFilter(searchTerm: string): void {
-    const term = (searchTerm || '').toLowerCase().trim();
+    const term = (searchTerm || "").toLowerCase().trim();
     this.chargerDropdownData = this.allChargers.filter((c) =>
       c.toLowerCase().includes(term),
     );
@@ -154,8 +162,12 @@ export class SessionsOverviewComponent implements OnInit {
       .subscribe((formValue) => {
         // Reset pagination to first page whenever filters change
         this.skip = 0;
-        this.activeFilters = mapFormValueToSessionFilters(formValue as SessionFilterFormValue);
-        this.isFiltered.set(hasActiveFilters(formValue as SessionFilterFormValue));
+        this.activeFilters = mapFormValueToSessionFilters(
+          formValue as SessionFilterFormValue,
+        );
+        this.isFiltered.set(
+          hasActiveFilters(formValue as SessionFilterFormValue),
+        );
         this.queryTrigger$.next();
       });
   }
@@ -177,7 +189,7 @@ export class SessionsOverviewComponent implements OnInit {
           return this.fakeSessionService.getSessions(query).pipe(
             catchError((err: Error) => {
               this.errorMessage.set(
-                err?.message || 'Failed to load sessions. Please try again.',
+                err?.message || "Failed to load sessions. Please try again.",
               );
               return of(null);
             }),
@@ -214,7 +226,7 @@ export class SessionsOverviewComponent implements OnInit {
   clearFilters(): void {
     this.filterForm.reset({
       chargerName: null,
-      chargerLocation: '',
+      chargerLocation: "",
       status: null,
       startedFrom: null,
       startedTo: null,
@@ -222,8 +234,8 @@ export class SessionsOverviewComponent implements OnInit {
       maxDuration: null,
       minEnergy: null,
       minCost: null,
-      user: '',
-      id: '',
+      user: "",
+      id: "",
     });
   }
 

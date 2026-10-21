@@ -2,7 +2,7 @@ export interface Session {
   id: string;
   chargerName: string;
   chargerLocation: string;
-  status: 'Active' | 'Completed' | 'Failed' | 'Cancelled';
+  status: "Active" | "Completed" | "Failed" | "Cancelled";
   startedAt: Date;
   durationMinutes: number;
   energyKwh: number;
@@ -10,7 +10,7 @@ export interface Session {
   user: string;
 }
 
-export type SessionSortDirection = 'asc' | 'desc';
+export type SessionSortDirection = "asc" | "desc";
 
 export interface SessionSort {
   field: keyof Session;
@@ -18,15 +18,15 @@ export interface SessionSort {
 }
 
 export type SessionFilterOperator =
-  | 'eq'
-  | 'neq'
-  | 'contains'
-  | 'startswith'
-  | 'endswith'
-  | 'gt'
-  | 'gte'
-  | 'lt'
-  | 'lte';
+  | "eq"
+  | "neq"
+  | "contains"
+  | "startswith"
+  | "endswith"
+  | "gt"
+  | "gte"
+  | "lt"
+  | "lte";
 
 export interface SessionFilter {
   field: keyof Session;

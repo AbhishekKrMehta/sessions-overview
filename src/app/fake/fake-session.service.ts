@@ -1,15 +1,15 @@
-import { Injectable } from '@angular/core';
-import { Observable, of, switchMap, throwError, timer } from 'rxjs';
-import { MOCK_SESSIONS } from './mock-sessions.data';
+import { Injectable } from "@angular/core";
+import { Observable, of, switchMap, throwError, timer } from "rxjs";
+import { MOCK_SESSIONS } from "./mock-sessions.data";
 import {
   Session,
   SessionFilter,
   SessionPage,
   SessionQuery,
   SessionSort,
-} from './session.model';
+} from "./session.model";
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class FakeSessionService {
   getSessions(query: SessionQuery = {}): Observable<SessionPage> {
     const delayMs = 400 + Math.random() * 500;
@@ -17,7 +17,7 @@ export class FakeSessionService {
     return timer(delayMs).pipe(
       switchMap(() => {
         if (shouldFail) {
-          return throwError(() => new Error('Failed to load sessions'));
+          return throwError(() => new Error("Failed to load sessions"));
         }
         const filtered = applyFilters(MOCK_SESSIONS, query.filters ?? []);
         const sorted = applySort(filtered, query.sort ?? []);
@@ -40,7 +40,10 @@ export class FakeSessionService {
   }
 }
 
-function applyFilters(sessions: Session[], filters: SessionFilter[]): Session[] {
+function applyFilters(
+  sessions: Session[],
+  filters: SessionFilter[],
+): Session[] {
   if (filters.length === 0) return sessions;
   return sessions.filter((session) =>
     filters.every((filter) => matches(session, filter)),
@@ -57,22 +60,22 @@ function matches(session: Session, filter: SessionFilter): boolean {
     return compareNumeric(left, right, operator);
   }
 
-  if (typeof raw === 'number' || typeof value === 'number') {
+  if (typeof raw === "number" || typeof value === "number") {
     return compareNumeric(Number(raw), Number(value), operator);
   }
 
-  const left = String(raw ?? '').toLowerCase();
-  const right = String(value ?? '').toLowerCase();
+  const left = String(raw ?? "").toLowerCase();
+  const right = String(value ?? "").toLowerCase();
   switch (operator) {
-    case 'eq':
+    case "eq":
       return left === right;
-    case 'neq':
+    case "neq":
       return left !== right;
-    case 'contains':
+    case "contains":
       return left.includes(right);
-    case 'startswith':
+    case "startswith":
       return left.startsWith(right);
-    case 'endswith':
+    case "endswith":
       return left.endsWith(right);
     default:
       return false;
@@ -82,20 +85,20 @@ function matches(session: Session, filter: SessionFilter): boolean {
 function compareNumeric(
   left: number,
   right: number,
-  operator: SessionFilter['operator'],
+  operator: SessionFilter["operator"],
 ): boolean {
   switch (operator) {
-    case 'eq':
+    case "eq":
       return left === right;
-    case 'neq':
+    case "neq":
       return left !== right;
-    case 'gt':
+    case "gt":
       return left > right;
-    case 'gte':
+    case "gte":
       return left >= right;
-    case 'lt':
+    case "lt":
       return left < right;
-    case 'lte':
+    case "lte":
       return left <= right;
     default:
       return false;
@@ -110,7 +113,7 @@ function applySort(sessions: Session[], sort: SessionSort[]): Session[] {
       const av = a[field];
       const bv = b[field];
       const cmp = compareValues(av, bv);
-      if (cmp !== 0) return direction === 'asc' ? cmp : -cmp;
+      if (cmp !== 0) return direction === "asc" ? cmp : -cmp;
     }
     return 0;
   });
@@ -119,6 +122,6 @@ function applySort(sessions: Session[], sort: SessionSort[]): Session[] {
 
 function compareValues(a: unknown, b: unknown): number {
   if (a instanceof Date && b instanceof Date) return a.getTime() - b.getTime();
-  if (typeof a === 'number' && typeof b === 'number') return a - b;
-  return String(a ?? '').localeCompare(String(b ?? ''));
+  if (typeof a === "number" && typeof b === "number") return a - b;
+  return String(a ?? "").localeCompare(String(b ?? ""));
 }

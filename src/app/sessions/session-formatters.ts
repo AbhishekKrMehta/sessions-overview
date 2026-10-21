@@ -3,8 +3,18 @@
  */
 
 const MONTH_NAMES = [
-  'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
 ];
 
 /**
@@ -12,7 +22,7 @@ const MONTH_NAMES = [
  */
 export function formatDuration(minutes: number | null | undefined): string {
   if (minutes == null || isNaN(minutes) || minutes < 0) {
-    return '—';
+    return "—";
   }
   const totalMinutes = Math.round(minutes);
   const hours = Math.floor(totalMinutes / 60);
@@ -32,7 +42,7 @@ export function formatDuration(minutes: number | null | undefined): string {
  */
 export function formatEnergy(kwh: number | null | undefined): string {
   if (kwh == null || isNaN(kwh)) {
-    return '—';
+    return "—";
   }
   return `${kwh.toFixed(1)} kWh`;
 }
@@ -42,7 +52,7 @@ export function formatEnergy(kwh: number | null | undefined): string {
  */
 export function formatCost(cost: number | null | undefined): string {
   if (cost == null || isNaN(cost)) {
-    return '—';
+    return "—";
   }
   return `€ ${cost.toFixed(2)}`;
 }
@@ -50,16 +60,18 @@ export function formatCost(cost: number | null | undefined): string {
 /**
  * Formats session start timestamp as '01 Feb 2026 20:23'.
  */
-export function formatStartedDate(date: Date | string | null | undefined): string {
-  if (!date) return '—';
+export function formatStartedDate(
+  date: Date | string | null | undefined,
+): string {
+  if (!date) return "—";
   const d = date instanceof Date ? date : new Date(date);
-  if (isNaN(d.getTime())) return '—';
+  if (isNaN(d.getTime())) return "—";
 
-  const day = String(d.getDate()).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, "0");
   const month = MONTH_NAMES[d.getMonth()];
   const year = d.getFullYear();
-  const hours = String(d.getHours()).padStart(2, '0');
-  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, "0");
+  const minutes = String(d.getMinutes()).padStart(2, "0");
 
   return `${day} ${month} ${year} ${hours}:${minutes}`;
 }
@@ -68,16 +80,18 @@ export function formatStartedDate(date: Date | string | null | undefined): strin
  * Extracts single initial for the user avatar (e.g. 'Anna Kuipers' -> 'A').
  */
 export function getUserInitial(name: string | null | undefined): string {
-  if (!name) return '?';
+  if (!name) return "?";
   const trimmed = name.trim();
-  return trimmed.length > 0 ? trimmed.charAt(0).toUpperCase() : '?';
+  return trimmed.length > 0 ? trimmed.charAt(0).toUpperCase() : "?";
 }
 
 /**
  * Truncates UUID for table presentation, e.g. '849d73eb...'.
  */
-export function truncateSessionId(id: string | null | undefined, length = 8): string {
-  if (!id) return '';
+export function truncateSessionId(
+  id: string | null | undefined,
+  length = 8,
+): string {
+  if (!id) return "";
   return id.length > length ? `${id.slice(0, length)}...` : id;
 }
-
