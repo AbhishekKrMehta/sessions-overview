@@ -2,29 +2,25 @@
 
 ## Approach
 
-Built a single-page session overview dashboard with Angular 20 and Kendo UI Grid matching `Assesment Design.png`. The guiding principle was **proportionate simplicity**: rather than introducing complex state management layers or custom stores for a single view, we used a single smart standalone component (`SessionsOverviewComponent`) paired with pure helper functions (`session-formatters.ts` and `session-filters.ts`). Every user action (filtering, sorting, paging, retrying) round-trips to `FakeSessionService` with server-side queries.
+Built a single-page session overview dashboard with Angular 20 and Kendo UI Grid matching `Assesment Design.png`. The architecture focuses on **proportionate simplicity**: a feature component managing the grid query pipeline, clean presentational subcomponents, and pure helper functions for formatting and filter mapping. Every filter, sort, and page action queries `FakeSessionService` on the server side.
 
 ## Key Decisions
 
-- **Smart Standalone Component + Pure Helpers & Presentational Subcomponents** — Rejected NGRX or complex multi-service abstractions. Kept the reactive pipeline directly in `SessionsOverviewComponent` using RxJS for asynchronous event orchestration and Signals for synchronous view state with `ChangeDetectionStrategy.OnPush`. Extracted presentational subcomponents (`SessionsHeaderComponent`, `SessionsErrorComponent`) using modern Signal `input` and `output` APIs. Pure formatting and filter mapping logic remain isolated in `session-formatters.ts` and `session-filters.ts`.
-- **Pragmatic RxJS & Signals Division of Responsibility** — Evaluated Angular 20's `rxResource`, but intentionally avoided it because it remains marked `@experimental`. Instead, we leveraged RxJS where it excels (debouncing typing, race-condition cancellation via `switchMap`, and stream retry handling) while using Angular Signals (`gridData`, `loading`, `errorMessage`, `isFiltered`) to provide zero-boilerplate, reactive bindings in templates.
-- **Reactive Stream with `switchMap` & Debouncing** — Used `switchMap` to cancel pending in-flight requests when filters, sort, or pagination change rapidly, preventing race conditions. Text filters are debounced by 300ms via Reactive Forms; paging and sorting trigger immediately. Any filter change automatically resets pagination to page 1 (`skip = 0`).
-- **Resilient Error Handling (5% Failure Rate)** — Caught errors *inside* `switchMap` (returning `of(null)`) rather than on the parent query stream. This guarantees that simulated backend errors never terminate the subscription. The UI displays an alert banner with a **Retry** button that re-executes the current query without clearing filters.
-- **Inclusive Date Boundaries for Started Range** — Session timestamps contain exact hours and minutes. To ensure same-day searches (e.g. Feb 1 to Feb 1) or ranges capture all sessions on those calendar days, `startedFrom` is normalized to `00:00:00.000` (`gte`) and `startedTo` to `23:59:59.999` (`lte`) in local time.
-- **Minimum-Threshold Semantics for Energy & Cost** — In the design screenshot, Energy and Cost have single input boxes. Because both fields contain floating-point numbers in the dataset, exact equality (`eq`) is practically unusable. Mapped both to greater-than-or-equal (`gte`) and added clear placeholder indicators (`≥ kWh`, `≥ €`).
-- **Support Usability Improvements** — Added a one-click **"Reset all filters"** button visible when filters are active, and click-to-copy functionality for truncated Session IDs with visual feedback.
+- **Feature Component + Subcomponents & Pure Helpers** — Kept state management lean without external state libraries (e.g. NgRx). Presentational concerns are split into dedicated subcomponents (`SessionsHeaderComponent`, `SessionsErrorComponent`) using modern Signal `input` and `output`. Complex filter translation and formatting are isolated in pure, testable helper functions (`session-filters.ts`, `session-formatters.ts`).
+- **Pragmatic RxJS & Signals Balance** — Used RxJS where it shines: debouncing filter keystrokes (300ms) and cancelling obsolete in-flight requests (`switchMap`). Used Angular Signals (`gridData`, `loading`, `errorMessage`, `isFiltered`) for synchronous UI state and reactive template binding with `OnPush` change detection. Avoided `@experimental` APIs (like `rxResource`) to keep the codebase stable and production-ready.
+- **Resilient Error Handling** — Handled the simulated 5% backend error inside `switchMap` so failures never terminate the stream. The UI presents a non-intrusive alert with a **Retry** button that re-runs the request without resetting user inputs.
+- **Inclusive Date Range Boundaries** — Timestamps contain exact times. To ensure full-day matches, start dates are set to `00:00:00.000` (`gte`) and end dates to `23:59:59.999` (`lte`).
+- **Minimum Threshold for Energy & Cost** — Exact matching on floating-point numbers is impractical. Numeric inputs are treated as minimum thresholds (`gte`) with clear placeholder cues (`≥ kWh`, `≥ €`).
+- **Usability Enhancements** — Added dynamic range boundaries (preventing "Started To" < "Started From" and "Max Duration" < "Min Duration"), a one-click **"Reset all filters"** button when filters are active, click-to-copy for truncated Session IDs, and a non-blocking top progress bar so typing is never interrupted by loading overlays.
 
-## Trade-offs & Things You'd Revisit
+## Trade-offs & Future Improvements
 
-- **URL Query Parameter Synchronization** — Filter, sort, and pagination state are held in memory. In a production app, syncing query state to the URL (`?status=Active&page=2`) would enable support staff to bookmark and share specific views.
-- **Operator Selection for Numeric Filters** — Kept single minimum-threshold inputs to match the visual design. In the future, a small operator toggle (`=`, `>`, `<`) could give users further precision.
-- **Bundle Budget Adjustment** — Adjusted `maximumError` in `angular.json` to 5 MB to accommodate the baseline Kendo UI component bundle and theme without build failures.
+- **URL Query Sync** — State is currently kept in component memory. In production, syncing filters and pagination to URL query parameters would allow support agents to share and bookmark filtered views.
+- **Advanced Numeric Operators** — Kept single minimum threshold inputs to match the visual design. Could be extended with operator toggles (`=`, `>`, `<`).
+- **Bundle Budget** — Increased the initial bundle budget in `angular.json` to accommodate Kendo UI Grid and default theme styles.
 
 ## AI Usage
 
-- **Tools used**: Google Antigravity paired with Gemini.
-- **Where AI accelerated development**: Fast generation of Kendo Grid filter row templates, CSS alignment matching `Assesment Design.png` (status pill badges, avatar circles), and writing the filter verification script.
-- **Human judgment & steering**:
-  - The developer explicitly constrained the architecture to remain simple, proportionate, and easy to explain, avoiding unnecessary services.
-  - Defined the domain logic for inclusive date-range boundaries and the `gte` operator choice for floating-point fields.
-  - Resolved the Angular CLI bundle budget constraint in `angular.json`.
+- **Tools**: GitHub Copilot & Gemini.
+- **Role of AI**: Acted as a sounding board and pair programmer to bounce ideas off, review architectural trade-offs (e.g. evaluating `rxResource` vs. stable RxJS/Signal boundaries), review edge cases, and verify bundle configuration.
+- **Human Ownership**: All feature design, architectural choices, domain logic (inclusive date boundaries, minimum threshold filters, dynamic range constraints), and code structure were driven and decided directly by me.

@@ -94,6 +94,7 @@
                 formControlName="startedFrom"
                 placeholder="From"
                 format="dd MMM yyyy"
+                [max]="startedToMax"
               >
               </kendo-datepicker>
               <span class="range-arrow" aria-hidden="true">→</span>
@@ -101,6 +102,7 @@
                 formControlName="startedTo"
                 placeholder="To"
                 format="dd MMM yyyy"
+                [min]="startedFromMin"
               >
               </kendo-datepicker>
             </div>
@@ -123,6 +125,7 @@
                 placeholder="Min"
                 [spinners]="false"
                 [min]="0"
+                [max]="maxDurationLimit"
                 format="n0"
               >
               </kendo-numerictextbox>
@@ -131,7 +134,7 @@
                 formControlName="maxDuration"
                 placeholder="Max"
                 [spinners]="false"
-                [min]="0"
+                [min]="minDurationLimit"
                 format="n0"
               >
               </kendo-numerictextbox>

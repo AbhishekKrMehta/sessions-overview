@@ -135,6 +135,23 @@ export class SessionsOverviewComponent implements OnInit {
   readonly getUserInitial = getUserInitial;
   readonly truncateSessionId = truncateSessionId;
 
+  // Helpers for dynamic template min/max constraints
+  get startedToMax(): Date {
+    return this.filterForm.controls.startedTo.value ?? new Date(2099, 11, 31);
+  }
+
+  get startedFromMin(): Date {
+    return this.filterForm.controls.startedFrom.value ?? new Date(1900, 0, 1);
+  }
+
+  get maxDurationLimit(): number {
+    return this.filterForm.controls.maxDuration.value ?? Number.MAX_SAFE_INTEGER;
+  }
+
+  get minDurationLimit(): number {
+    return this.filterForm.controls.minDuration.value ?? 0;
+  }
+
   // RxJS pipeline trigger for server queries
   protected readonly queryTrigger$ = new BehaviorSubject<void>(undefined);
 

@@ -69,34 +69,63 @@ export function mapFormValueToSessionFilters(
   }
 
   // 4. Started Date Range (inclusive start of day for 'From', inclusive end of day for 'To')
-  if (form.startedFrom instanceof Date && !isNaN(form.startedFrom.getTime())) {
+  const validStartedFrom =
+    form.startedFrom instanceof Date && !isNaN(form.startedFrom.getTime())
+      ? form.startedFrom
+      : null;
+  const validStartedTo =
+    form.startedTo instanceof Date && !isNaN(form.startedTo.getTime())
+      ? form.startedTo
+      : null;
+
+  // If both dates are provided, ensure start <= end before querying
+  const hasValidDateOrder =
+    !validStartedFrom ||
+    !validStartedTo ||
+    validStartedFrom.getTime() <= validStartedTo.getTime();
+
+  if (validStartedFrom && hasValidDateOrder) {
     filters.push({
       field: "startedAt",
       operator: "gte",
-      value: startOfDay(form.startedFrom),
+      value: startOfDay(validStartedFrom),
     });
   }
-  if (form.startedTo instanceof Date && !isNaN(form.startedTo.getTime())) {
+  if (validStartedTo && hasValidDateOrder) {
     filters.push({
       field: "startedAt",
       operator: "lte",
-      value: endOfDay(form.startedTo),
+      value: endOfDay(validStartedTo),
     });
   }
 
-  // 5. Duration Min/Max range in minutes
-  if (form.minDuration != null && !isNaN(form.minDuration)) {
+  // 5. Duration Min/Max range in minutes (ensuring min <= max if both provided)
+  const validMinDuration =
+    form.minDuration != null && !isNaN(form.minDuration)
+      ? form.minDuration
+      : null;
+  const validMaxDuration =
+    form.maxDuration != null && !isNaN(form.maxDuration)
+      ? form.maxDuration
+      : null;
+
+  const hasValidDurationOrder =
+    validMinDuration == null ||
+    validMaxDuration == null ||
+    validMinDuration <= validMaxDuration;
+
+  if (validMinDuration != null && hasValidDurationOrder) {
     filters.push({
       field: "durationMinutes",
       operator: "gte",
-      value: form.minDuration,
+      value: validMinDuration,
     });
   }
-  if (form.maxDuration != null && !isNaN(form.maxDuration)) {
+  if (validMaxDuration != null && hasValidDurationOrder) {
     filters.push({
       field: "durationMinutes",
       operator: "lte",
-      value: form.maxDuration,
+      value: validMaxDuration,
     });
   }
 
