@@ -18,8 +18,16 @@ import {
   GridModule,
   PageChangeEvent,
 } from "@progress/kendo-angular-grid";
+import { IconsModule } from "@progress/kendo-angular-icons";
 import { InputsModule } from "@progress/kendo-angular-inputs";
 import { SortDescriptor } from "@progress/kendo-data-query";
+import {
+  arrowRotateCcwIcon,
+  checkIcon,
+  copyIcon,
+  exclamationCircleIcon,
+  SVGIcon,
+} from "@progress/kendo-svg-icons";
 import {
   BehaviorSubject,
   catchError,
@@ -62,6 +70,7 @@ import {
     DateInputsModule,
     InputsModule,
     ButtonModule,
+    IconsModule,
   ],
   templateUrl: "./sessions-overview.component.html",
   styleUrls: ["./sessions-overview.component.scss"],
@@ -110,6 +119,12 @@ export class SessionsOverviewComponent implements OnInit {
   readonly errorMessage = signal<string | null>(null);
   readonly isFiltered = signal<boolean>(false);
   readonly copiedSessionId = signal<string | null>(null);
+
+  // Kendo SVG Icons
+  readonly resetIcon: SVGIcon = arrowRotateCcwIcon;
+  readonly warningIcon: SVGIcon = exclamationCircleIcon;
+  readonly copyIcon: SVGIcon = copyIcon;
+  readonly checkIcon: SVGIcon = checkIcon;
 
   // Expose pure formatters to template
   readonly formatDuration = formatDuration;

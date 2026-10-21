@@ -8,7 +8,8 @@
     </div>
     @if (isFiltered()) {
       <button type="button" class="clear-filters-btn" (click)="clearFilters()">
-        ✕ Reset all filters
+        <kendo-svg-icon [icon]="resetIcon" size="small"></kendo-svg-icon>
+        Reset all filters
       </button>
     }
   </header>
@@ -16,7 +17,10 @@
   @if (errorMessage()) {
     <div class="error-banner" role="alert">
       <div class="error-content">
-        <span class="error-icon" aria-hidden="true">⚠️</span>
+        <kendo-svg-icon
+          [icon]="warningIcon"
+          class="error-svg-icon"
+        ></kendo-svg-icon>
         <span class="error-text">{{ errorMessage() }}</span>
       </div>
       <button type="button" class="retry-button" (click)="retry()">
@@ -222,7 +226,17 @@
                 class="copy-indicator"
                 [class.copied]="copiedSessionId() === dataItem.id"
               >
-                {{ copiedSessionId() === dataItem.id ? "✓" : "⧉" }}
+                @if (copiedSessionId() === dataItem.id) {
+                  <kendo-svg-icon
+                    [icon]="checkIcon"
+                    size="small"
+                  ></kendo-svg-icon>
+                } @else {
+                  <kendo-svg-icon
+                    [icon]="copyIcon"
+                    size="small"
+                  ></kendo-svg-icon>
+                }
               </span>
             </span>
           </ng-template>
