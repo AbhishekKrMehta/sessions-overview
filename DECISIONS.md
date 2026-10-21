@@ -22,5 +22,7 @@ Built a single-page session overview dashboard with Angular 20 and Kendo UI Grid
 ## AI Usage
 
 - **Tools**: GitHub Copilot & Gemini.
-- **Role of AI**: Acted as a sounding board and pair programmer to bounce ideas off, review architectural trade-offs (e.g. evaluating `rxResource` vs. stable RxJS/Signal boundaries), review edge cases, and verify bundle configuration.
-- **Human Ownership**: All feature design, architectural choices, domain logic (inclusive date boundaries, minimum threshold filters, dynamic range constraints), and code structure were driven and decided directly by me.
+- **Role of AI**: Acted as a sounding board to explore architectural trade-offs, review edge cases, and inspect bundle configuration.
+- **Corrections & Steering**:
+  - **Rejected experimental APIs**: The AI initially favored Angular 20's `rxResource`. I stepped in to reject it because it is `@experimental`, steering the solution back to stable, battle-tested RxJS (`switchMap`) paired with Signals.
+  - **Fixed blocking UX**: The AI defaulted to Kendo's full-grid loading overlay which interrupted user typing; I replaced it with a non-blocking top progress bar.
