@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "ng serve",
-    "build": "ng build"
+    "build": "ng build",
+    "lint": "ng lint"
   },
   "dependencies": {
     "@angular/animations": "20.3.18",
@@ -52,6 +53,9 @@
     "@angular/build": "20.3.19",
     "@angular/cli": "20.3.20",
     "@angular/compiler-cli": "20.3.18",
-    "typescript": "5.9.3"
+    "angular-eslint": "20.7.0",
+    "eslint": "9.39.1",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.0"
   }
 }
